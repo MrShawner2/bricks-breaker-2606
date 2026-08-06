@@ -68,8 +68,9 @@ bool Game::Update()
 	if (GetAsyncKeyState('R') & 0x1)
 		Reset();
 
-	ball.Update();
-	CheckCollision();
+    ball.Update();
+    CheckCollision();
+	
 	return true;
 }
 
@@ -128,10 +129,9 @@ void Game::CheckCollision()
 	// TODO #4 - Update collision to check all bricks
     for (size_t i = 0; i < bricks.size(); i++)
     {
-        if (bricks[i].Contains(ball.x_position + ball.x_velocity, ball.y_position + ball.y_velocity))
+        if (bricks[i].Contains(ball.x_position, ball.y_position))
         {
             bricks[i].hits++;
-            ball.y_velocity *= -1;
 
             // TODO #5 - If the ball hits the same brick 3 times (color == black), remove it from the vector
             if (bricks[i].hits == 1)
@@ -142,11 +142,12 @@ void Game::CheckCollision()
             {
                 bricks[i].color = ConsoleColor::Red;
             }
-            else if (bricks[i].hits == 3)
+            else if (bricks[i].hits >= 3)
             {
-                bricks.erase(bricks.begin() + 1);
+                bricks.erase(bricks.begin() + i);
             }
 
+            ball.y_velocity *= -1;
             break;
         }
 	}
@@ -157,7 +158,7 @@ void Game::CheckCollision()
         ball.moving = false;
     }
 
-	if (paddle.Contains(ball.x_position + ball.x_velocity, ball.y_velocity + ball.y_position))
+	if (paddle.Contains(ball.x_position, ball.y_position))
 	{
 		ball.y_velocity *= -1;
 	}
